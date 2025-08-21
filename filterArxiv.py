@@ -3,6 +3,7 @@ import email
 import base64
 
 from google.auth.transport.requests import Request
+from google.auth.exceptions import RefreshError
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
@@ -32,12 +33,12 @@ def check_credentials():
         if creds and creds.expired and creds.refresh_token:
             try:
                 creds.refresh(Request())
-            except:
+            except RefreshError:
                 os.remove('token.json')
                 e = "Auth error. Removed token.json. Please, run the script"
                 e += " again"
-                input(e)
-                raise
+                print(e)
+                return None
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
                 'credentials.json', SCOPES)
@@ -163,6 +164,8 @@ def main():
     """
 
     creds = check_credentials()
+    if creds is None:
+        return
 
     # Call the Gmail API
     try:
