@@ -1,6 +1,7 @@
 import base64
 import email
 import os
+from typing import Any
 
 from google.auth.exceptions import RefreshError
 from google.auth.transport.requests import Request
@@ -16,7 +17,7 @@ DIRPATH = "abstracts_filtered"
 LABELID = "Label_7139621076713114511"
 
 
-def check_credentials():
+def check_credentials() -> Credentials | None:
     """
     Check credentials and save for the next session
     """
@@ -51,7 +52,8 @@ def check_credentials():
     return creds
 
 
-def grab_subject_body(message):
+def grab_subject_body(message: dict[str, Any]
+                      ) -> tuple[str | None, str | None]:
     """
     Extract the subject and body of the message
     """
@@ -82,7 +84,8 @@ def grab_subject_body(message):
     return subject, body
 
 
-def get_abstracts_links(body, keywords):
+def get_abstracts_links(body: str, keywords: list[str]
+                        ) -> tuple[list[str], list[str]]:
     """
     Grab the abstracts and filter them from the body
     """
@@ -140,7 +143,8 @@ def get_abstracts_links(body, keywords):
     return abstracts, links
 
 
-def write_to_file(subject, abstracts, links):
+def write_to_file(subject: str, abstracts: list[str], links: list[str]
+                  ) -> None:
     """
     Write to file the filtered abstracts and links
     """
@@ -158,7 +162,7 @@ def write_to_file(subject, abstracts, links):
             fwrite.write(NEWLINE * 2)
 
 
-def main():
+def main() -> None:
     """
     Filter the arxiv e-mails
     """
@@ -186,6 +190,7 @@ def main():
         subject, body = grab_subject_body(message)
         if subject is None:
             continue
+        assert body is not None
 
         if "math daily" not in subject and "astro-ph daily" not in subject:
             continue
