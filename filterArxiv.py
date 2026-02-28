@@ -71,12 +71,10 @@ def grab_subject_body(message: dict[str, Any]
     if "parts" in payload:
         try:
             body = payload["parts"][0]["body"]["data"]
-        except:
+        except KeyError:
             return None, None
-        encoding = "utf-8"
     else:
         body = payload["body"]["data"]
-        encoding = "ascii"
 
     body = base64.urlsafe_b64decode(body)
     body = email.message_from_bytes(body).as_string()
